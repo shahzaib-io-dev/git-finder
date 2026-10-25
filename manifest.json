@@ -1,0 +1,21 @@
+{
+  "name": "GitFinder - Developer Analytics",
+  "short_name": "GitFinder",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#05080E",
+  "theme_color": "#05080E",
+  "description": "Explore GitHub developers, stats, and repositories.",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

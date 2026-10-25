@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitFinder — Developer Analytics</title>
+    
+    <link rel="icon" type="image/png" href="icon.png">
+
+    <meta property="og:title" content="GitFinder — Developer Analytics">
+    <meta property="og:description" content="Search any GitHub username to view their analytics, stats, and latest repositories.">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <meta name="theme-color" content="#05080E">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="bg-orb"></div>
+
+    <div class="app-container">
+        
+        <nav class="navbar">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+                <span>GitFinder</span>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="hero">
+                <h1>Explore GitHub <span>Developers</span></h1>
+                <p>Search any username to view their analytics, stats, and latest repositories.</p>
+            </header>
+
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="usernameInput" placeholder="Enter GitHub username..." autocomplete="off">
+                    <!-- Clear Input Button -->
+                    <button id="clearSearchBtn" class="clear-search-btn hidden" title="Clear">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                    <button id="searchBtn">Search</button>
+                </div>
+                
+                <div class="quick-links" id="quickLinks">
+                    <span>Try searching:</span>
+                    <button onclick="quickSearch('shahzaib-io-dev')">shahzaib-io-dev</button>
+                    <button onclick="quickSearch('torvalds')">torvalds</button>
+                    <button onclick="quickSearch('gaearon')">gaearon</button>
+                </div>
+
+                <div class="search-history hidden" id="searchHistoryBox">
+                    <div class="history-label">Recent:</div>
+                    <div id="historyChips"></div>
+                    <button id="clearHistoryBtn" class="clear-btn" title="Clear History">✕ Clear</button>
+                </div>
+            </div>
+
+            <div id="skeletonLoader" class="hidden">
+                <div class="skeleton-dashboard">
+                    <div class="skeleton-left">
+                        <div class="sk-avatar"></div>
+                        <div class="sk-text sk-title"></div>
+                        <div class="sk-text sk-subtitle"></div>
+                        <div class="sk-text sk-bio"></div>
+                    </div>
+                    <div class="skeleton-right">
+                        <div class="sk-stats">
+                            <div class="sk-stat-box"></div>
+                            <div class="sk-stat-box"></div>
+                            <div class="sk-stat-box"></div>
+                        </div>
+                        <div class="sk-text sk-detail"></div>
+                        <div class="sk-text sk-detail"></div>
+                    </div>
+                </div>
+                <div class="skeleton-grid">
+                    <div class="sk-card"></div>
+                    <div class="sk-card"></div>
+                    <div class="sk-card"></div>
+                </div>
+            </div>
+
+            <div id="errorBox" class="hidden center-state error">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <h3 id="errorTitle">User Not Found</h3>
+                <p id="errorDesc">Please check the spelling or try another username.</p>
+            </div>
+
+            <div id="resultBox" class="hidden">
+                <div class="profile-dashboard">
+                    <div class="profile-left">
+                        <div class="avatar-wrapper">
+                            <img id="avatar" src="" alt="User Avatar">
+                        </div>
+                        <h2 id="name">User Name</h2>
+                        <div class="username-wrapper">
+                            <a id="username" href="#" target="_blank">@username</a>
+                            <!-- Copy Username Button -->
+                            <button id="copyUsernameBtn" class="copy-btn" title="Copy Username">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                        <p id="bio" class="bio"></p>
+                        <a id="profileLink" href="#" target="_blank" class="btn-outline">View GitHub Profile</a>
+                    </div>
+
+                    <div class="profile-right">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <span class="stat-value" id="repos">0</span>
+                                <span class="stat-label">Repositories</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-value" id="followers">0</span>
+                                <span class="stat-label">Followers</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-value" id="following">0</span>
+                                <span class="stat-label">Following</span>
+                            </div>
+                        </div>
+
+                        <div class="extra-details">
+                            <div class="detail-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                <span id="location">Not available</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                <span id="joined">Joined</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="repos-section">
+                    <h3 class="section-title">Latest Repositories</h3>
+                    <div class="repos-grid" id="reposGrid"></div>
+                    <div class="view-all-wrapper">
+                        <a id="viewAllReposBtn" href="#" target="_blank" class="btn-view-all">View All Repositories ↗</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>© <span id="currentYear"></span> Crafted with 💡 by <a href="https://shahzaib-io-dev.github.io/shahzaib-portfolio/" target="_blank">Shahzaib</a></p>
+        </footer>
+    </div>
+
+    <button id="scrollTopBtn" class="scroll-top hidden" title="Go to top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>
